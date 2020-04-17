@@ -9,6 +9,9 @@ use Symfony\Component\Process\Process;
 class MongoDb extends DbDumper
 {
     protected $port = 27017;
+    public $clusterMode = true;
+    public $shardList = null;
+    public $ssl = true;
 
     /** @var null|string */
     protected $collection = null;
@@ -40,8 +43,8 @@ class MongoDb extends DbDumper
     /**
      * Verifies if the dbname and host options are set.
      *
-     * @throws \Spatie\DbDumper\Exceptions\CannotStartDump
      * @return void
+     * @throws \Spatie\DbDumper\Exceptions\CannotStartDump
      */
     protected function guardAgainstIncompleteCredentials()
     {
@@ -102,7 +105,8 @@ class MongoDb extends DbDumper
         }
 
         if (isset($this->host)) {
-            $command[] = "--host {$this->host}";
+            $host      = $this->clusterMode ? $this->shardList : $this->host;
+            $command[] = "--host {$host}";
         }
 
         if (isset($this->port)) {
@@ -115,6 +119,10 @@ class MongoDb extends DbDumper
 
         if ($this->authenticationDatabase) {
             $command[] = "--authenticationDatabase {$this->authenticationDatabase}";
+        }
+
+        if ($this->ssl) {
+            $command[] = '--ssl';
         }
 
         return $this->echoToFile(implode(' ', $command), $filename);
