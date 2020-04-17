@@ -109,7 +109,7 @@ class MongoDb extends DbDumper
             $command[] = "--host {$host}";
         }
 
-        if (isset($this->port)) {
+        if (isset($this->port) && !$this->clusterMode) {
             $command[] = "--port {$this->port}";
         }
 
