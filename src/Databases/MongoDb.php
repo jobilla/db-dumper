@@ -104,11 +104,6 @@ class MongoDb extends DbDumper
             $command[] = "--password '{$this->password}'";
         }
 
-        if (isset($this->host)) {
-            $host      = $this->clusterMode ? $this->shardList : $this->host;
-            $command[] = "--host {$host}";
-        }
-
         if (isset($this->port) && !$this->clusterMode) {
             $command[] = "--port {$this->port}";
         }
@@ -123,6 +118,11 @@ class MongoDb extends DbDumper
 
         if ($this->ssl) {
             $command[] = '--ssl';
+        }
+
+        if (isset($this->host)) {
+            $host      = $this->clusterMode ? $this->shardList : $this->host;
+            $command[] = "--host {$host}";
         }
 
         return $this->echoToFile(implode(' ', $command), $filename);
